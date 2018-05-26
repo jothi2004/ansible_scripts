@@ -1,0 +1,9 @@
+---
+-
+  hosts: all
+  name: update package using yum
+
+  tasks:
+   -
+      name: tasks section
+      command: ls -l /root
