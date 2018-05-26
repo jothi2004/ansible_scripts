@@ -1,9 +1,0 @@
----
--
-  hosts: all
-  name: update package using yum
-
-  tasks:
-   -
-      name: tasks section
-      command: yum -y update
