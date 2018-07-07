@@ -1,0 +1,53 @@
+---
+# vim: set ft=ansible et ts=2 sw=2:
+#
+# Create a new VM from a template
+
+- name: VM from template
+  hosts: vmcreate
+  gather_facts: false
+  connection: local
+  vars:
+    hostname: 192.168.160.35 
+    esxhost: 192.168.160.26
+    datastore: emartech-cnt
+    network: "vlan66"
+    annotation: "testsetesets"
+    vmtemplate: icptemplate
+    vmcluster: EMARATECH-CLS
+    notes: Created by Ansible
+    folders: "/EMARATECH-DC/vm"
+    dumpfacts: False
+    vcenter_user: "Administrator@emaratech.local"
+    vcenter_pass: "P@ssw0rd" 
+    name: testopen
+  tasks:
+    - name: Create VM from template
+      vmware_guest:
+        validate_certs: False
+        hostname: "{{ hostname }}"
+        username: "{{ vcenter_user }}"
+        password: "{{ vcenter_pass }}"
+        esxi_hostname: "{{ esxhost }}"
+        folder: "/EMARATECH-DC/vm"
+        datacenter: EMARATECH-DC
+        name: "testopen"
+        template: "{{ vmtemplate }}"
+        disk:
+          - size_gb: "110"
+            type: thin
+            datastore: "{{ datastore }}"
+          - size_gb: "110"
+            type: thin
+            datastore: "{{ datastore }}"
+        networks:
+          - name: "{{ network }}"
+        hardware:
+          memory_mb: "{{ vm_memory | default(1024) }}"
+        wait_for_ip_address: False
+        state: present
+      register: newvm
+
+    - name: IP address info
+      debug:
+        msg: "{{ newvm.instance.ipv4 }} {{ name }}"
